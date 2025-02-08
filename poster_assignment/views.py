@@ -2,6 +2,8 @@
 
 import pandas as pd
 from django.shortcuts import render
+from django.conf import settings
+
 from .forms import UploadFileForm
 from .models import Judge, JudgeExpertise, Poster
 from sklearn.feature_extraction.text import TfidfVectorizer
