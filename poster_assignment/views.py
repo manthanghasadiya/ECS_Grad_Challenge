@@ -9,7 +9,7 @@ def home(request):
     """
     Render the homepage.
     """
-    return render(request, "C:\\Users\\manth\\PycharmProjects\\PythonProject1\\poster_planner\\poster_assignment\\templates\\home.html")
+    return render(request, "home.html")
 
 
 def upload_judges(request):
@@ -22,7 +22,7 @@ def upload_judges(request):
             required_columns = ["Judge FirstName", "Judge LastName", "Department", "Hour available"]
             for col in required_columns:
                 if col not in df.columns:
-                    return render(request, "C:\\Users\\manth\\PycharmProjects\\PythonProject1\\poster_planner\\poster_assignment\\templates\\upload.html", {"form": form, "error": f"Missing column: {col}"})
+                    return render(request, "upload.html", {"form": form, "error": f"Missing column: {col}"})
 
             # Fill NaNs and trim whitespace
             df.fillna("", inplace=True)
@@ -53,10 +53,10 @@ def upload_judges(request):
                 if "keywords" in row:
                     JudgeExpertise.objects.create(judge=judge, keywords=row["keywords"])
 
-            return render(request, "C:\\Users\\manth\\PycharmProjects\\PythonProject1\\poster_planner\\poster_assignment\\templates\\upload_success.html")
+            return render(request, "upload_success.html")
     else:
         form = UploadFileForm()
-    return render(request, "C:\\Users\\manth\\PycharmProjects\\PythonProject1\\poster_planner\\poster_assignment\\templates\\upload.html", {"form": form})
+    return render(request, "upload.html", {"form": form})
 
 
 def upload_posters(request):
@@ -75,10 +75,10 @@ def upload_posters(request):
                     program=row["Program"],
                 )
 
-            return render(request, "C:\\Users\\manth\\PycharmProjects\\PythonProject1\\poster_planner\\poster_assignment\\templates\\upload_success.html")
+            return render(request, "upload_success.html")
     else:
         form = UploadFileForm()
-    return render(request, "C:\\Users\\manth\\PycharmProjects\\PythonProject1\\poster_planner\\poster_assignment\\templates\\upload.html", {"form": form})
+    return render(request, "upload.html", {"form": form})
 
 
 def upload_judge_expertise(request):
@@ -95,7 +95,7 @@ def upload_judge_expertise(request):
             required_columns = ["Judge Name", "Keywords"]
             for col in required_columns:
                 if col not in df.columns:
-                    return render(request, "C:\\Users\\manth\\PycharmProjects\\PythonProject1\\poster_planner\\poster_assignment\\templates\\upload.html", {"form": form, "error": f"Missing column: {col}"})
+                    return render(request, "upload.html", {"form": form, "error": f"Missing column: {col}"})
 
             df.fillna("", inplace=True)  # Fill NaN values with empty strings
 
@@ -105,8 +105,9 @@ def upload_judge_expertise(request):
                 for _, row in df.iterrows()
             ])
 
-            return render(request, "C:\\Users\\manth\\PycharmProjects\\PythonProject1\\poster_planner\\poster_assignment\\templates\\upload_success.html")
+            return render(request, "upload_success.html")
 
     else:
         form = UploadFileForm()
-    return render(request, "C:\\Users\\manth\\PycharmProjects\\PythonProject1\\poster_planner\\poster_assignment\\templates\\upload.html", {"form": form})
+    return render(request, "upload.html", {"form": form})
+
