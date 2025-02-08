@@ -23,6 +23,8 @@ class Poster(models.Model):
     advisor_last_name = models.CharField(max_length=50)
     program = models.CharField(max_length=100)
 
+    assigned_judge_1 = models.CharField(max_length=200, blank=True, null=True)
+    assigned_judge_2 = models.CharField(max_length=200, blank=True, null=True)
     def __str__(self):
         return self.title
 
