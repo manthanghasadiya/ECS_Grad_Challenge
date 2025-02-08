@@ -13,6 +13,7 @@ from nltk.tokenize import word_tokenize
 
 from django.shortcuts import render
 
+
 def home(request):
     """
     Render the homepage.
@@ -27,18 +28,21 @@ def upload_judges(request):
             file = request.FILES["file"]
             df = pd.read_excel(file, engine="openpyxl")
             # Ensure required columns are present
-            required_columns = ["Judge FirstName", "Judge LastName", "Department", "Hour available"]
+            required_columns = ["Judge FirstName",
+                                "Judge LastName", "Department", "Hour available"]
             for col in required_columns:
                 if col not in df.columns:
                     return render(request, "upload.html", {"form": form, "error": f"Missing column: {col}"})
 
             # Fill NaNs and trim whitespace
             df.fillna("", inplace=True)
-            df["Judge FirstName"] = df["Judge FirstName"].astype(str).str.strip()
+            df["Judge FirstName"] = df["Judge FirstName"].astype(
+                str).str.strip()
             df["Judge LastName"] = df["Judge LastName"].astype(str).str.strip()
 
             # **Create Full Name Column**
-            df["Full Name"] = df["Judge FirstName"] + " " + df["Judge LastName"]
+            df["Full Name"] = df["Judge FirstName"] + \
+                " " + df["Judge LastName"]
 
             # Process each row
             for _, row in df.iterrows():
@@ -48,7 +52,8 @@ def upload_judges(request):
                     defaults={
                         "department": row["Department"],
                         "hour_available": row["Hour available"],
-                        "full_name": row["Full Name"],  # Store Full Name in model
+                        # Store Full Name in model
+                        "full_name": row["Full Name"],
                     }
                 )
             # for _, row in df.iterrows():
@@ -59,7 +64,8 @@ def upload_judges(request):
             #         hour_available=row["Hour available"],
             #     )
                 if "keywords" in row:
-                    JudgeExpertise.objects.create(judge=judge, keywords=row["keywords"])
+                    JudgeExpertise.objects.create(
+                        judge=judge, keywords=row["keywords"])
 
             return render(request, "upload_success.html")
     else:
@@ -109,7 +115,8 @@ def upload_judge_expertise(request):
 
             # Directly insert all rows into the database
             JudgeExpertise.objects.bulk_create([
-                JudgeExpertise(judge_name=row["Judge Name"].strip(), keywords=row["Keywords"].strip())
+                JudgeExpertise(judge_name=row["Judge Name"].strip(
+                ), keywords=row["Keywords"].strip())
                 for _, row in df.iterrows()
             ])
 
@@ -118,6 +125,7 @@ def upload_judge_expertise(request):
     else:
         form = UploadFileForm()
     return render(request, "upload.html", {"form": form})
+
 
 def assign(request):
     if request.method == "GET":
@@ -128,22 +136,27 @@ def assign(request):
         detail_of_judge = pd.DataFrame.from_records(exprts)
         judge = pd.DataFrame.from_records(jdj)
 
-        sample['name'] = sample['advisor_first_name'].str.strip() + " " + sample['advisor_last_name'].str.strip()
-        judge['name'] = judge['first_name'].str.strip() + " " + judge['last_name'].str.strip()
+        sample['name'] = sample['advisor_first_name'].str.strip(
+        ) + " " + sample['advisor_last_name'].str.strip()
+        judge['name'] = judge['first_name'].str.strip() + " " + \
+            judge['last_name'].str.strip()
         detail_of_judge['name'] = detail_of_judge['judge_name']
+
         def check_name_similarity(name1, name2):
             name1_words = set(name1.lower().split())
             name2_words = set(name2.lower().split())
             return len(name1_words & name2_words) >= 2
 
-        judge['merge_key'] = judge['name'].apply(lambda x: [y for y in detail_of_judge['name'] if check_name_similarity(x, y)])
+        judge['merge_key'] = judge['name'].apply(
+            lambda x: [y for y in detail_of_judge['name'] if check_name_similarity(x, y)])
         judge = judge.drop(columns='name')
         # Explode the merge_key to have a row for each potential match
         judge_exploded = judge.explode('merge_key')
         judge_exploded.rename(columns={'merge_key': 'name'}, inplace=True)
 
         # Merge the datasets
-        matched_df = pd.merge(judge_exploded, detail_of_judge, on='name', how='inner')
+        matched_df = pd.merge(
+            judge_exploded, detail_of_judge, on='name', how='inner')
         matched_df['hour_available'] = matched_df['hour_available'].astype(str)
 
         # nltk.download('stopwords')
@@ -153,7 +166,8 @@ def assign(request):
             stop_words = set(stopwords.words('english'))
             tokens = word_tokenize(text)
             # Ensure only alphanumeric words are kept and stopwords are removed
-            filtered_words = [word.lower() for word in tokens if word.isalnum() and word.lower() not in stop_words]
+            filtered_words = [word.lower() for word in tokens if word.isalnum(
+            ) and word.lower() not in stop_words]
             return filtered_words
 
         def similarity(a, b):
@@ -199,12 +213,15 @@ def assign(request):
             scores = []
             for index, expertise in enumerate(matched_df['keywords']):
                 expertise_processed = preprocess(expertise)
-                sim_score = calculate_tfidf_cosine_similarity(abstract_processed, expertise_processed) * 100
+                sim_score = calculate_tfidf_cosine_similarity(
+                    abstract_processed, expertise_processed) * 100
                 # Include check for advisor
-                if matched_df['name'][index] != sample['name'][i]:  # Ensure the judge is not the advisor
+                # Ensure the judge is not the advisor
+                if matched_df['name'][index] != sample['name'][i]:
                     scores.append(
                         (matched_df['name'][index], sim_score, matched_df['hour_available'][index], poster_number))
-            poster_scores[poster_number] = sorted(scores, key=lambda x: x[1], reverse=True)
+            poster_scores[poster_number] = sorted(
+                scores, key=lambda x: x[1], reverse=True)
 
         # Assign judges to posters, respecting the rules
         judge_limits = {name: 0 for name in matched_df['name']}
@@ -221,8 +238,10 @@ def assign(request):
 
                 # Determine the condition for the poster assignment based on its even or odd identifier
                 is_even_poster = poster % 2 == 0
-                valid_availability1 = availability1 in (['2', 'both'] if is_even_poster else ['1', 'both'])
-                valid_availability2 = availability2 in (['2', 'both'] if is_even_poster else ['1', 'both'])
+                valid_availability1 = availability1 in (
+                    ['2', 'both'] if is_even_poster else ['1', 'both'])
+                valid_availability2 = availability2 in (
+                    ['2', 'both'] if is_even_poster else ['1', 'both'])
 
                 # Function to try to assign a judge
                 def try_assign(judge):
@@ -252,7 +271,8 @@ def assign(request):
 
             # Determine the condition for the poster assignment based on its even or odd identifier
             is_even_poster = poster % 2 == 0
-            valid_availability = availability in (['2', 'both'] if is_even_poster else ['1', 'both'])
+            valid_availability = availability in (
+                ['2', 'both'] if is_even_poster else ['1', 'both'])
 
             if valid_availability:
                 if try_assign(judge):
@@ -267,9 +287,12 @@ def assign(request):
         for poster_id, judges in assignments.items():
             if judges:
                 try:
-                    poster_obj = Poster.objects.get(title=sample.loc[poster_id - 1]['title'])
-                    poster_obj.assigned_judge_1 = judges[0] if len(judges) > 0 else None
-                    poster_obj.assigned_judge_2 = judges[1] if len(judges) > 1 else None
+                    poster_obj = Poster.objects.get(
+                        title=sample.loc[poster_id - 1]['title'])
+                    poster_obj.assigned_judge_1 = judges[0] if len(
+                        judges) > 0 else None
+                    poster_obj.assigned_judge_2 = judges[1] if len(
+                        judges) > 1 else None
                     poster_obj.save()  # ✅ Save the assigned judges to the Poster model
                 except Poster.DoesNotExist:
                     continue
