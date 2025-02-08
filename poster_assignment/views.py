@@ -73,6 +73,7 @@ def upload_judges(request):
     return render(request, "upload.html", {"form": form})
 
 
+
 def upload_posters(request):
     if request.method == "POST":
         form = UploadFileForm(request.POST, request.FILES)
