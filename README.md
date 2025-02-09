@@ -70,7 +70,7 @@ A powerful web-based Poster Assignment System that streamlines the process of as
 ```
 git clone https://github.com/manthanghasadiya/ECS_Grad_Challenge.git
 
-cd poster-assignment-system
+cd ECS_Grad_Challenge
 ```
 
 2. Create a virtual environment:
