@@ -2,6 +2,8 @@
 
 import pandas as pd
 from django.shortcuts import render
+from django.conf import settings
+
 from .forms import UploadFileForm
 from .models import Judge, JudgeExpertise, Poster
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -20,60 +22,12 @@ def home(request):
     """
     return render(request, "home.html")
 
-
-def upload_judges(request):
-    if request.method == "POST":
-        form = UploadFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            file = request.FILES["file"]
-            df = pd.read_excel(file, engine="openpyxl")
-            # Ensure required columns are present
-            required_columns = ["Judge FirstName",
-                                "Judge LastName", "Department", "Hour available"]
-            for col in required_columns:
-                if col not in df.columns:
-                    return render(request, "upload.html", {"form": form, "error": f"Missing column: {col}"})
-
-            # Fill NaNs and trim whitespace
-            df.fillna("", inplace=True)
-            df["Judge FirstName"] = df["Judge FirstName"].astype(
-                str).str.strip()
-            df["Judge LastName"] = df["Judge LastName"].astype(str).str.strip()
-
-            # **Create Full Name Column**
-            df["Full Name"] = df["Judge FirstName"] + \
-                " " + df["Judge LastName"]
-
-            # Process each row
-            for _, row in df.iterrows():
-                judge, created = Judge.objects.update_or_create(
-                    first_name=row["Judge FirstName"],
-                    last_name=row["Judge LastName"],
-                    defaults={
-                        "department": row["Department"],
-                        "hour_available": row["Hour available"],
-                        # Store Full Name in model
-                        "full_name": row["Full Name"],
-                    }
-                )
-            # for _, row in df.iterrows():
-            #     judge, created = Judge.objects.get_or_create(
-            #         first_name=row["Judge FirstName"],
-            #         last_name=row["Judge LastName"],
-            #         department=row["Department"],
-            #         hour_available=row["Hour available"],
-            #     )
-                if "keywords" in row:
-                    JudgeExpertise.objects.create(
-                        judge=judge, keywords=row["keywords"])
-
-            return render(request, "upload_success.html")
-    else:
-        form = UploadFileForm()
-    return render(request, "upload.html", {"form": form})
-
-
 def upload_posters(request):
+    context = {
+        'title': 'Upload Posters',
+        'button_text': '📝 Upload Posters Data'
+    }
+
     if request.method == "POST":
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
@@ -91,9 +45,38 @@ def upload_posters(request):
 
             return render(request, "upload_success.html")
     else:
-        form = UploadFileForm()
-    return render(request, "upload.html", {"form": form})
+        context['form'] = UploadFileForm()
+        return render(request, "upload.html", context)
 
+    return render(request, "upload.html", context)
+
+def upload_judges(request):
+    context = {
+        'title': 'Upload Judges',
+        'button_text': '📝 Upload Judges Data'
+    }
+
+    if request.method == "POST":
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            file = request.FILES["file"]
+            df = pd.read_excel(file, engine="openpyxl")
+
+            for _, row in df.iterrows():
+                Poster.objects.create(
+                    title=row["Title"],
+                    abstract=row["Abstract"],
+                    advisor_first_name=row["Advisor First Name"],
+                    advisor_last_name=row["Advisor Last Name"],
+                    program=row["Program"],
+                )
+
+            return render(request, "upload_success.html")
+    else:
+        context['form'] = UploadFileForm()
+        return render(request, "upload.html", context)
+
+    return render(request, "upload.html", context)
 
 def upload_judge_expertise(request):
     """
@@ -125,7 +108,6 @@ def upload_judge_expertise(request):
     else:
         form = UploadFileForm()
     return render(request, "upload.html", {"form": form})
-
 
 def assign(request):
     if request.method == "GET":
