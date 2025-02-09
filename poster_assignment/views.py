@@ -288,56 +288,123 @@ def assign(request):
 def judge_login(request):
     return render(request, "login.html")
 
+# def login(request):
+#     if request.method == "POST":
+#         password = request.POST.get("password")
+#         # print(password)
+#         jdj = Judge.objects.get(password=password)
+#         pst = Poster.objects.all().values()
+#         posters = pd.DataFrame.from_records(pst)
+#         print(jdj.full_name)
+#         assigned_poster_titles = []
+#         if jdj:
+#             judge_name = jdj.full_name  # Use full_name for lookup
+#
+#             # Find posters assigned to this judge
+#             assigned_posters = Poster.objects.filter(
+#                 assigned_judge_1=judge_name
+#             ) | Poster.objects.filter(
+#                 assigned_judge_2=judge_name
+#             )
+#
+#             return render(request, "results.html", {"judge": jdj, "posters": assigned_posters})
+#         else:
+#             return render(request, "login.html")
+
+
 def login(request):
     if request.method == "POST":
         password = request.POST.get("password")
-        # print(password)
-        jdj = Judge.objects.get(password=password)
-        pst = Poster.objects.all().values()
-        posters = pd.DataFrame.from_records(pst)
-        print(jdj.full_name)
-        assigned_poster_titles = []
-        if jdj:
-            judge_name = jdj.full_name  # Use full_name for lookup
 
-            # Find posters assigned to this judge
-            assigned_posters = Poster.objects.filter(
-                assigned_judge_1=judge_name
-            ) | Poster.objects.filter(
-                assigned_judge_2=judge_name
-            )
+        try:
+            jdj = Judge.objects.get(password=password)
+            request.session["judge_name"] = jdj.full_name  # Store judge name in session
+            return redirect("results")  # Redirect to results page after login
+        except Judge.DoesNotExist:
+            return render(request, "login.html", {"error_message": "Invalid password. Try again."})
 
-            return render(request, "results.html", {"judge": jdj, "posters": assigned_posters})
-        else:
-            return render(request, "login.html")
+    return render(request, "login.html")
 
+
+# def submit_scores(request):
+#     if request.method == "POST":
+#         judge_name = request.POST.get("judge_name")  # Get the logged-in judge's name
+#         posters = Poster.objects.all()  # Fetch all posters from the database
+#
+#         for poster in posters:
+#             score_key = f"score_{poster.title}"  # Example: "score_5"
+#
+#             # Check if this score is in the POST request
+#             if score_key in request.POST:
+#                 score = request.POST[score_key]
+#
+#                 if score:  # If a score is provided
+#                     score = int(score)  # Convert to integer
+#
+#                     # Determine if this judge is Judge 1 or Judge 2
+#                     if poster.assigned_judge_1 == judge_name:
+#                         poster.judge_1_score = score
+#                     elif poster.assigned_judge_2 == judge_name:
+#                         poster.judge_2_score = score
+#
+#                     poster.save()  # Save the updated score to the database
+#
+#         return redirect("home")  # Redirect to home page after submission
+#
+#     return HttpResponse("Invalid request", status=400)
 
 def submit_scores(request):
     if request.method == "POST":
-        judge_name = request.POST.get("judge_name")  # Get the logged-in judge's name
-        posters = Poster.objects.all()  # Fetch all posters from the database
+        poster_id = request.POST.get("poster_id")  # Get poster ID
+        judge_name = request.POST.get("judge_name")  # Get judge's name
+        score = request.POST.get("score")  # Get submitted score
 
-        for poster in posters:
-            score_key = f"score_{poster.title}"  # Example: "score_5"
+        if not poster_id or not score:
+            return HttpResponse("Invalid submission.", status=400)
 
-            # Check if this score is in the POST request
-            if score_key in request.POST:
-                score = request.POST[score_key]
+        try:
+            poster = Poster.objects.get(id=poster_id)  # Get the poster
+            score = int(score)  # Convert score to integer
 
-                if score:  # If a score is provided
-                    score = int(score)  # Convert to integer
+            # Assign the score to the correct judge column
+            if poster.assigned_judge_1 == judge_name and poster.judge_1_score is None:
+                poster.judge_1_score = score
+            elif poster.assigned_judge_2 == judge_name and poster.judge_2_score is None:
+                poster.judge_2_score = score
+            else:
+                return HttpResponse("Score already assigned!", status=403)
 
-                    # Determine if this judge is Judge 1 or Judge 2
-                    if poster.assigned_judge_1 == judge_name:
-                        poster.judge_1_score = score
-                    elif poster.assigned_judge_2 == judge_name:
-                        poster.judge_2_score = score
+            poster.save()  # Save the updated poster data
+            return redirect("/results/")  # Redirect back to results page after submission
 
-                    poster.save()  # Save the updated score to the database
+        except Poster.DoesNotExist:
+            return HttpResponse("Poster not found.", status=404)
 
-        return redirect("home")  # Redirect to home page after submission
+    return HttpResponse("Invalid request.", status=400)
 
-    return HttpResponse("Invalid request", status=400)
+
+def results(request):
+    """
+    Display assigned posters and scores for the logged-in judge.
+    """
+    judge_name = request.session.get("judge_name")  # Retrieve judge from session
+
+    if not judge_name:  # If no judge is logged in, redirect to login page
+        return redirect("login")
+
+    assigned_posters = Poster.objects.filter(
+        assigned_judge_1=judge_name
+    ) | Poster.objects.filter(
+        assigned_judge_2=judge_name
+    )
+
+    return render(request, "results.html", {"judge_name": judge_name, "posters": assigned_posters})
+
+def logout(request):
+    request.session.flush()  # Clear session
+    return redirect("login")  # Redirect to login page
+
+
 
 # def results(request):
 #     return render(request, "results.html")
