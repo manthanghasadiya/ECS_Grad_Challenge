@@ -10,16 +10,12 @@ A powerful web-based Poster Assignment System that streamlines the process of as
 ## 🚀 Features
 
 
-
 ### Admin Panel
 
 
 + Upload judge details (names, departments, available hours).
-
 + Upload poster details (titles, abstracts, advisors).
-
 + Automatically assign judges to posters based on expertise (using TF-IDF similarity).
-
 + Generate a final ranking table based on judges' scores.
 
 
