@@ -1,8 +1,10 @@
 from django.urls import path
-from .views import home, upload_judges, upload_posters, upload_judge_expertise, assign, login, judge_login, submit_scores, results, logout, ranking
+from .views import home, upload_judges, upload_posters, upload_judge_expertise, assign, login, judge_login, submit_scores, results, logout, ranking, admin_login, dashboard
 
 urlpatterns = [
-    path("", home, name="home"),
+    path("",admin_login,name = "admin_login"),
+    path("home/",admin_login,name = "home"),
+    path("dashboard/", dashboard, name="dashboard"),
     path("upload_judges/", upload_judges, name="upload_judges"),
     path("upload_posters/", upload_posters, name="upload_posters"),
     path("upload_judge_expertise/", upload_judge_expertise, name="upload_judge_expertise"),

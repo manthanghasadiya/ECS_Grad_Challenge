@@ -20,17 +20,18 @@ from django.contrib.auth.forms import AuthenticationForm
 
 from django.db.models import F, Value
 from django.db.models.functions import Coalesce
-
-
+from django.contrib.auth.decorators import login_required
 
 from django.shortcuts import render
 
 
+@login_required
 def home(request):
     """
     Render the homepage.
     """
     return render(request, "home.html")
+
 
 def upload_posters(request):
     context = {
@@ -64,6 +65,7 @@ def upload_posters(request):
 
     return render(request, "upload.html", context)
 
+
 def upload_judges(request):
     context = {
         'title': 'Upload Judges',
@@ -91,6 +93,7 @@ def upload_judges(request):
         return render(request, "upload.html", context)
 
     return render(request, "upload.html", context)
+
 
 def upload_judge_expertise(request):
     """
@@ -123,6 +126,7 @@ def upload_judge_expertise(request):
         form = UploadFileForm()
     return render(request, "upload.html", {"form": form})
 
+
 def assign(request):
     if request.method == "GET":
         poster = Poster.objects.all().values()
@@ -135,7 +139,7 @@ def assign(request):
         sample['name'] = sample['advisor_first_name'].str.strip(
         ) + " " + sample['advisor_last_name'].str.strip()
         judge['name'] = judge['first_name'].str.strip() + " " + \
-            judge['last_name'].str.strip()
+                        judge['last_name'].str.strip()
         detail_of_judge['name'] = detail_of_judge['judge_name']
 
         def check_name_similarity(name1, name2):
@@ -299,6 +303,7 @@ def assign(request):
 def judge_login(request):
     return render(request, "login.html")
 
+
 # def login(request):
 #     if request.method == "POST":
 #         password = request.POST.get("password")
@@ -434,7 +439,6 @@ def submit_scores(request):
     return HttpResponse("Invalid request.", status=400)
 
 
-
 def results(request):
     """
     Display assigned posters and scores for the logged-in judge.
@@ -451,6 +455,7 @@ def results(request):
     )
 
     return render(request, "results.html", {"judge_name": judge_name, "posters": assigned_posters})
+
 
 def logout(request):
     request.session.flush()  # Clear session
@@ -513,21 +518,21 @@ def ranking(request):
     #                Judge 2 Innovation + Judge 2 Implementation + Judge 2 Creativity) / 6
     posters = Poster.objects.annotate(
         total_score=(
-            Coalesce(F('judge_1_innovation'), Value(0)) +
-            Coalesce(F('judge_1_implementation'), Value(0)) +
-            Coalesce(F('judge_1_creativity'), Value(0)) +
-            Coalesce(F('judge_2_innovation'), Value(0)) +
-            Coalesce(F('judge_2_implementation'), Value(0)) +
-            Coalesce(F('judge_2_creativity'), Value(0))
-        ) / 6,
+                            Coalesce(F('judge_1_innovation'), Value(0)) +
+                            Coalesce(F('judge_1_implementation'), Value(0)) +
+                            Coalesce(F('judge_1_creativity'), Value(0)) +
+                            Coalesce(F('judge_2_innovation'), Value(0)) +
+                            Coalesce(F('judge_2_implementation'), Value(0)) +
+                            Coalesce(F('judge_2_creativity'), Value(0))
+                    ) / 6,
         innovation_avg=(
-            Coalesce(F('judge_1_innovation'), Value(0)) +
-            Coalesce(F('judge_2_innovation'), Value(0))
-        ) / 2,
+                               Coalesce(F('judge_1_innovation'), Value(0)) +
+                               Coalesce(F('judge_2_innovation'), Value(0))
+                       ) / 2,
         implementation_avg=(
-            Coalesce(F('judge_1_implementation'), Value(0)) +
-            Coalesce(F('judge_2_implementation'), Value(0))
-        ) / 2
+                                   Coalesce(F('judge_1_implementation'), Value(0)) +
+                                   Coalesce(F('judge_2_implementation'), Value(0))
+                           ) / 2
     ).order_by('-total_score', '-innovation_avg', '-implementation_avg')  # Sorting logic
 
     # Slice top 10 posters
@@ -538,3 +543,20 @@ def ranking(request):
 
 # def results(request):
 #     return render(request, "results.html")
+
+
+def admin_login(request):
+    return render(request, 'admin_login.html')
+
+
+def dashboard(request):
+    if request.method == 'POST':
+        password = request.POST.get("password")
+        username = request.POST.get("username")
+
+        user = authenticate(username=username, password=password)
+
+        if user is not None:
+            return render(request, 'home.html')
+
+        return redirect("admin_login")
