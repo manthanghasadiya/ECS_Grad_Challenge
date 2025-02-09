@@ -1,4 +1,14 @@
+import random
+import string
 from django.db import models
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+
+
+def generate_random_password(first_name):
+    """Generate a password in the format: FirstName + Random 4 Characters"""
+    random_chars = ''.join(random.choices(string.ascii_letters + string.digits, k=4))
+    return f"{first_name[:4]}{random_chars}"
+
 
 class Judge(models.Model):
     first_name = models.CharField(max_length=50)
@@ -9,8 +19,15 @@ class Judge(models.Model):
         max_length=10,
         choices=[("1", "Hour 1"), ("2", "Hour 2"), ("both", "Both Hours")],
     )
+    password = models.CharField(max_length=12,blank=True, null=True)  # 🔹 Auto-generated password
     max_assignments = models.IntegerField(default=6)
     current_assignments = models.IntegerField(default=0)
+
+    def save(self, *args, **kwargs):
+        """Generate a unique password only when creating a new judge."""
+        if not self.password:  # Only generate if password is empty
+            self.password = generate_random_password(self.first_name)
+        super().save(*args, **kwargs)  # Call Django's save method
 
     def __str__(self):
         return f"{self.first_name} {self.last_name} ({self.department})"
@@ -25,6 +42,10 @@ class Poster(models.Model):
 
     assigned_judge_1 = models.CharField(max_length=200, blank=True, null=True)
     assigned_judge_2 = models.CharField(max_length=200, blank=True, null=True)
+
+    judge_1_score = models.IntegerField(blank=True, null=True)
+    judge_2_score = models.IntegerField(blank=True, null=True)
+
     def __str__(self):
         return self.title
 

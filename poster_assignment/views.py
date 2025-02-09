@@ -1,15 +1,21 @@
 # from importlib.metadata import pass_none
 
 import pandas as pd
+from django.http import HttpResponse
 from django.shortcuts import render
 from .forms import UploadFileForm
-from .models import Judge, JudgeExpertise, Poster
+from .models import Judge, JudgeExpertise, Poster, generate_random_password
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import nltk
 from difflib import SequenceMatcher
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+
+from django.contrib.auth import authenticate, login
+from django.shortcuts import render, redirect
+from django.contrib.auth.forms import AuthenticationForm
+
 
 from django.shortcuts import render
 
@@ -42,6 +48,7 @@ def upload_judges(request):
 
             # Process each row
             for _, row in df.iterrows():
+                password = generate_random_password(row["Judge FirstName"])
                 judge, created = Judge.objects.update_or_create(
                     first_name=row["Judge FirstName"],
                     last_name=row["Judge LastName"],
@@ -49,6 +56,7 @@ def upload_judges(request):
                         "department": row["Department"],
                         "hour_available": row["Hour available"],
                         "full_name": row["Full Name"],  # Store Full Name in model
+                        "password": password
                     }
                 )
             # for _, row in df.iterrows():
@@ -275,3 +283,61 @@ def assign(request):
                     continue
 
     return render(request, "assignment.html")
+
+
+def judge_login(request):
+    return render(request, "login.html")
+
+def login(request):
+    if request.method == "POST":
+        password = request.POST.get("password")
+        # print(password)
+        jdj = Judge.objects.get(password=password)
+        pst = Poster.objects.all().values()
+        posters = pd.DataFrame.from_records(pst)
+        print(jdj.full_name)
+        assigned_poster_titles = []
+        if jdj:
+            judge_name = jdj.full_name  # Use full_name for lookup
+
+            # Find posters assigned to this judge
+            assigned_posters = Poster.objects.filter(
+                assigned_judge_1=judge_name
+            ) | Poster.objects.filter(
+                assigned_judge_2=judge_name
+            )
+
+            return render(request, "results.html", {"judge": jdj, "posters": assigned_posters})
+        else:
+            return render(request, "login.html")
+
+
+def submit_scores(request):
+    if request.method == "POST":
+        judge_name = request.POST.get("judge_name")  # Get the logged-in judge's name
+        posters = Poster.objects.all()  # Fetch all posters from the database
+
+        for poster in posters:
+            score_key = f"score_{poster.title}"  # Example: "score_5"
+
+            # Check if this score is in the POST request
+            if score_key in request.POST:
+                score = request.POST[score_key]
+
+                if score:  # If a score is provided
+                    score = int(score)  # Convert to integer
+
+                    # Determine if this judge is Judge 1 or Judge 2
+                    if poster.assigned_judge_1 == judge_name:
+                        poster.judge_1_score = score
+                    elif poster.assigned_judge_2 == judge_name:
+                        poster.judge_2_score = score
+
+                    poster.save()  # Save the updated score to the database
+
+        return redirect("home")  # Redirect to home page after submission
+
+    return HttpResponse("Invalid request", status=400)
+
+# def results(request):
+#     return render(request, "results.html")
