@@ -1,6 +1,129 @@
-<h2>Upload Data</h2>
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Upload</button>
-</form>
+{% load static %}  <!-- Add this line at the top -->
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Poster Planner</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --hover: #2980b9;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            background: url('{% static "imgs/illustration.png" %}') center/cover fixed;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+
+        }
+
+        .container {
+            background: white;
+            padding: 3rem 4rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            animation: fadeIn 1s ease-in;
+        }
+
+        h1 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: 0;
+            margin: 2rem 0;
+        }
+
+        .nav-item {
+            margin: 1.5rem 0;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-item:hover {
+            transform: translateX(10px);
+        }
+
+        .nav-item a {
+            text-decoration: none;
+            color: white;
+            background: var(--secondary);
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            display: block;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(52,152,219,0.3);
+        }
+
+        .nav-item a:hover {
+            background: var(--hover);
+            box-shadow: 0 6px 20px rgba(41,128,185,0.4);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 2rem;
+                width: 90%;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+            <h1>🎯 {{ title }}</h1>
+            {% csrf_token %}
+            {{ form.as_p }}
+            {% if error %}
+                <div class="error">{{ error }}</div>
+            {% endif %}
+
+            <ul class="nav-list">
+                <li class="nav-item">
+                    <a href="{% url 'upload_judges' %}">{{ button_text }}</a>
+                </li>
+                <!-- <li class="nav-item"> -->
+                <!--     <a href="{% url 'upload_posters' %}">🖼️ Upload Posters</a> -->
+                <!-- </li> -->
+            </ul>
+    </div>
+</body>
+
+
+<!-- <form method="post" enctype="multipart/form-data"> -->
+<!--     <h1>🎯 {{ title }}</h1> -->
+<!--     {% csrf_token %} -->
+<!--     {{ form.as_p }} -->
+<!--     {% if error %} -->
+<!--         <div class="error">{{ error }}</div> -->
+<!--     {% endif %} -->
+<!--     <button type="submit" class="nav-item"> -->
+<!--         {{ button_text }} -->
+<!--     </button> -->
+<!--     <ul class="nav-list"> -->
+<!--         <li type="submit" class="nav-item"> -->
+<!--             <a href="{% url 'upload_judges' %}">📝 Upload Data</a> -->
+<!--         </li> -->
+<!--     </ul> -->
+<!-- </form> -->
