@@ -35,8 +35,8 @@ A powerful web-based Poster Assignment System that streamlines the process of as
 ### Ranking and Scoreboard
 
 + Automatically calculate total scores and resolve ties using:
-+   Innovation score (as the first tiebreaker).
-+   Implementation score (as the second tiebreaker).
+  + Innovation score (as the first tiebreaker).
+  + Implementation score (as the second tiebreaker).
 + Display a leaderboard with responsive design for desktop and mobile.
 
 
@@ -109,27 +109,27 @@ python manage.py runserver
 ## 🔑 Usage
 
 ### Admin Workflow
-1. Navigate to the admin panel (/admin).
-2. Upload judge details and poster details using the upload pages.
-3. Click the "Assign" button to automatically assign judges to posters based on expertise.
-4. Use the "Final Scoreboard" button to view the leaderboard after scores are submitted.
++ Navigate to the admin panel (/admin).
++ Upload judge details and poster details using the upload pages.
++ Click the "Assign" button to automatically assign judges to posters based on expertise.
++ Use the "Final Scoreboard" button to view the leaderboard after scores are submitted.
 
 ### Judges Workflow
 
-1. Login with your credentials (received via email).
-2. View your assigned posters.
-3. Submit scores for each poster based on:
++ Login with your credentials (received via email).
++ View your assigned posters.
++ Submit scores for each poster based on:
   + Innovation
   + Implementation
   + Creativity
-4. Logout once all scores are submitted.
++  Logout once all scores are submitted.
 
 
 ## 📊 Ranking System
-+ Total Score = (Sum of all scores) ÷ 6
-+ Tiebreaker Rules:
-  1. Higher Innovation Score wins.
-  2. If tied, higher Implementation Score wins.
++ **Total Score** = (Sum of all scores) ÷ 6
++ **Tiebreaker Rules**:
+  1. Higher **Innovation Score** wins.
+  2. If tied, a higher **Implementation Score** wins.
 
 
 ## 🧑‍💻 Contributing
