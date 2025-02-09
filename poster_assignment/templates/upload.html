@@ -92,23 +92,48 @@
 
 <body>
     <div class="container">
-            <h1>🎯 {{ title }}</h1>
-            {% csrf_token %}
-            {{ form.as_p }}
-            {% if error %}
-                <div class="error">{{ error }}</div>
+        <h1>🎯 {{ title }}</h1>
+        <ul class="nav-list">
+            {% if upload_judges_enabled %}
+                <form action="{% url 'upload_judges' %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <div>
+                        <button type="submit">{{ button_text }}</button>
+                    </div>
+                    {% if error %}
+                        <div class="error">{{ error }}</div>
+                    {% endif %}
+                </form>
             {% endif %}
-
-            <ul class="nav-list">
-                <li class="nav-item">
-                    <a href="{% url 'upload_judges' %}">{{ button_text }}</a>
-                </li>
-                <!-- <li class="nav-item"> -->
-                <!--     <a href="{% url 'upload_posters' %}">🖼️ Upload Posters</a> -->
-                <!-- </li> -->
-            </ul>
+            {% if upload_posters_enabled %}
+                <form action="{% url 'upload_posters' %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <div>
+                        <button type="submit">{{ button_text }}</button>
+                    </div>
+                    {% if error %}
+                        <div class="error">{{ error }}</div>
+                    {% endif %}
+                </form>
+            {% endif %}
+            {% if upload_judge_expertise_enabled %}
+                <form action="{% url 'upload_judge_expertise' %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <div>
+                        <button type="submit">{{ button_text }}</button>
+                    </div>
+                    {% if error %}
+                        <div class="error">{{ error }}</div>
+                    {% endif %}
+                </form>
+            {% endif %}
+        </ul>
     </div>
 </body>
+
 
 
 <!-- <form method="post" enctype="multipart/form-data"> -->
