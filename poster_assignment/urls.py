@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import home, upload_judges, upload_posters, upload_judge_expertise, assign, login, judge_login, submit_scores, results, logout
+from .views import home, upload_judges, upload_posters, upload_judge_expertise, assign, login, judge_login, submit_scores, results, logout, ranking
 
 urlpatterns = [
     path("", home, name="home"),
@@ -12,4 +12,5 @@ urlpatterns = [
     path("submit_scores/", submit_scores, name="submit_scores"),
     path("results/", results, name="results"),
     path("logout/", logout, name="logout"),
+    path("ranking/", ranking, name="ranking"),
 ]

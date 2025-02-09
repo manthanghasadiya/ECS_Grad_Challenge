@@ -453,6 +453,50 @@ def logout(request):
     return redirect("login")  # Redirect to login page
 
 
+def ranking(request):
+    """
+    View to display the top 10 ranked posters.
+    Sorting is based on total average score,
+    with tiebreakers based on Innovation and Implementation scores.
+    """
+    # Fetch all posters with valid scores
+    posters = Poster.objects.all()
+
+    # Compute total scores
+    ranked_projects = []
+    for poster in posters:
+        if None not in [
+            poster.judge_1_innovation, poster.judge_1_implementation, poster.judge_1_creativity,
+            poster.judge_2_innovation, poster.judge_2_implementation, poster.judge_2_creativity
+        ]:
+            # Calculate the average total score
+            total_score = (
+                poster.judge_1_innovation + poster.judge_1_implementation + poster.judge_1_creativity +
+                poster.judge_2_innovation + poster.judge_2_implementation + poster.judge_2_creativity
+            ) / 6
+
+            # Calculate innovation and implementation averages (for tie-breaking)
+            innovation_score = (poster.judge_1_innovation + poster.judge_2_innovation) / 2
+            implementation_score = (poster.judge_1_implementation + poster.judge_2_implementation) / 2
+
+            ranked_projects.append({
+                "title": poster.title,
+                "total_score": total_score,
+                "innovation_score": innovation_score,
+                "implementation_score": implementation_score,
+            })
+
+    # Sort first by total score, then by innovation score, then by implementation score
+    ranked_projects.sort(
+        key=lambda x: (-x["total_score"], -x["innovation_score"], -x["implementation_score"])
+    )
+
+    # Get the top 10 projects
+    top_10_projects = ranked_projects[:100]
+
+    return render(request, "ranking.html", {"projects": top_10_projects})
+
+
 
 # def results(request):
 #     return render(request, "results.html")

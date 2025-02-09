@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Final Scoreboard</title>
+</head>
+<body>
+    <h1>Top 10 Poster Rankings</h1>
+    <table border="1">
+        <tr>
+            <th>Rank</th>
+            <th>Poster Title</th>
+            <th>Total Score</th>
+            <th>Innovation Score (Tiebreaker)</th>
+            <th>Implementation Score (Tiebreaker)</th>
+        </tr>
+        {% for project in projects %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ project.title }}</td>
+            <td>{{ project.total_score|floatformat:2 }}</td>
+            <td>{{ project.innovation_score|floatformat:2 }}</td>
+            <td>{{ project.implementation_score|floatformat:2 }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <a href="{% url 'home' %}"><button>Back to Home</button></a>
+</body>
+</html>
