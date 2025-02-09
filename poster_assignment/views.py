@@ -353,26 +353,66 @@ def login(request):
 #
 #     return HttpResponse("Invalid request", status=400)
 
+# def submit_scores(request):
+#     if request.method == "POST":
+#         poster_id = request.POST.get("poster_id")  # Get poster ID
+#         judge_name = request.POST.get("judge_name")  # Get judge's name
+#         score = request.POST.get("score")  # Get submitted score
+#
+#         if not poster_id or not score:
+#             return HttpResponse("Invalid submission.", status=400)
+#
+#         try:
+#             poster = Poster.objects.get(id=poster_id)  # Get the poster
+#             score = int(score)  # Convert score to integer
+#
+#             # Assign the score to the correct judge column
+#             if poster.assigned_judge_1 == judge_name and poster.judge_1_score is None:
+#                 poster.judge_1_score = score
+#             elif poster.assigned_judge_2 == judge_name and poster.judge_2_score is None:
+#                 poster.judge_2_score = score
+#             else:
+#                 return HttpResponse("Score already assigned!", status=403)
+#
+#             poster.save()  # Save the updated poster data
+#             return redirect("/results/")  # Redirect back to results page after submission
+#
+#         except Poster.DoesNotExist:
+#             return HttpResponse("Poster not found.", status=404)
+#
+#     return HttpResponse("Invalid request.", status=400)
+
 def submit_scores(request):
     if request.method == "POST":
         poster_id = request.POST.get("poster_id")  # Get poster ID
         judge_name = request.POST.get("judge_name")  # Get judge's name
-        score = request.POST.get("score")  # Get submitted score
 
-        if not poster_id or not score:
+        innovation = request.POST.get("innovation")  # Get innovation score
+        implementation = request.POST.get("implementation")  # Get implementation score
+        creativity = request.POST.get("creativity")  # Get creativity score
+
+        if not poster_id or not innovation or not implementation or not creativity:
             return HttpResponse("Invalid submission.", status=400)
 
         try:
             poster = Poster.objects.get(id=poster_id)  # Get the poster
-            score = int(score)  # Convert score to integer
+            innovation = int(innovation)  # Convert scores to integers
+            implementation = int(implementation)
+            creativity = int(creativity)
 
-            # Assign the score to the correct judge column
-            if poster.assigned_judge_1 == judge_name and poster.judge_1_score is None:
-                poster.judge_1_score = score
-            elif poster.assigned_judge_2 == judge_name and poster.judge_2_score is None:
-                poster.judge_2_score = score
+            # Assign the scores to the correct judge column
+            if poster.assigned_judge_1 == judge_name and poster.judge_1_innovation is None:
+                poster.judge_1_innovation = innovation
+                poster.judge_1_implementation = implementation
+                poster.judge_1_creativity = creativity
+
+            elif poster.assigned_judge_2 == judge_name and poster.judge_2_innovation is None:
+                poster.judge_2_innovation = innovation
+                poster.judge_2_implementation = implementation
+                poster.judge_2_creativity = creativity
+
             else:
-                return HttpResponse("Score already assigned!", status=403)
+                return HttpResponse("Scores already assigned!", status=403)
 
             poster.save()  # Save the updated poster data
             return redirect("/results/")  # Redirect back to results page after submission
@@ -381,6 +421,7 @@ def submit_scores(request):
             return HttpResponse("Poster not found.", status=404)
 
     return HttpResponse("Invalid request.", status=400)
+
 
 
 def results(request):

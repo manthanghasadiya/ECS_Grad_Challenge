@@ -43,8 +43,17 @@ class Poster(models.Model):
     assigned_judge_1 = models.CharField(max_length=200, blank=True, null=True)
     assigned_judge_2 = models.CharField(max_length=200, blank=True, null=True)
 
-    judge_1_score = models.IntegerField(blank=True, null=True)
-    judge_2_score = models.IntegerField(blank=True, null=True)
+    # judge_1_score = models.IntegerField(blank=True, null=True)
+    # judge_2_score = models.IntegerField(blank=True, null=True)
+
+    judge_1_innovation = models.IntegerField(blank=True, null=True)
+    judge_1_implementation = models.IntegerField(blank=True, null=True)
+    judge_1_creativity = models.IntegerField(blank=True, null=True)
+
+    # Scores for Judge 2
+    judge_2_innovation = models.IntegerField(blank=True, null=True)
+    judge_2_implementation = models.IntegerField(blank=True, null=True)
+    judge_2_creativity = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
         return self.title

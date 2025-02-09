@@ -71,6 +71,76 @@
 <!--</body>-->
 <!--</html>-->
 
+<!-- oooooooooooooooooooooooooooooooo -->
+
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>Assign Scores</title>-->
+<!--    <script>-->
+<!--        function showPosterForm() {-->
+<!--            var selectedPoster = document.getElementById("posterSelect").value;-->
+<!--            var posterForms = document.getElementsByClassName("poster-form");-->
+
+<!--            for (var i = 0; i < posterForms.length; i++) {-->
+<!--                posterForms[i].style.display = "none";-->
+<!--            }-->
+
+<!--            if (selectedPoster) {-->
+<!--                document.getElementById("form_" + selectedPoster).style.display = "block";-->
+<!--            }-->
+<!--        }-->
+
+<!--        function confirmSubmission(event) {-->
+<!--            var confirmation = confirm("Are you sure you want to submit this as the final score?");-->
+<!--            if (!confirmation) {-->
+<!--                event.preventDefault();-->
+<!--            }-->
+<!--        }-->
+<!--    </script>-->
+<!--</head>-->
+<!--<body>-->
+<!--    <h2>Welcome, {{ judge_name }}</h2>-->
+<!--    <h3>Select a poster to assign a score:</h3>-->
+
+<!--    {% if posters %}-->
+<!--        <select id="posterSelect" onchange="showPosterForm()">-->
+<!--            <option value="">&#45;&#45; Select a Poster &#45;&#45;</option>-->
+<!--            {% for poster in posters %}-->
+<!--                {% if poster.judge_1_score is None or poster.judge_2_score is None %}-->
+<!--                    <option value="{{ poster.id }}">{{ poster.title }}</option>-->
+<!--                {% endif %}-->
+<!--            {% endfor %}-->
+<!--        </select>-->
+
+<!--        {% for poster in posters %}-->
+<!--            {% if poster.judge_1_score is None or poster.judge_2_score is None %}-->
+<!--                <form id="form_{{ poster.id }}" class="poster-form" method="POST" action="{% url 'submit_scores' %}" style="display: none;" onsubmit="confirmSubmission(event)">-->
+<!--                    {% csrf_token %}-->
+<!--                    <h4>{{ poster.title }}</h4>-->
+<!--                    <p>{{ poster.abstract }}</p>-->
+
+<!--                    <label for="score">Score (0-10):</label>-->
+<!--                    <input type="number" name="score" min="0" max="10" required>-->
+
+<!--                    <input type="hidden" name="poster_id" value="{{ poster.id }}">-->
+<!--                    <input type="hidden" name="judge_name" value="{{ judge_name }}">-->
+
+<!--                    <button type="submit">Submit Score</button>-->
+<!--                </form>-->
+<!--            {% endif %}-->
+<!--        {% endfor %}-->
+<!--    {% else %}-->
+<!--        <p>No posters assigned.</p>-->
+<!--    {% endif %}-->
+
+<!--    <a href="{% url 'logout' %}">Logout</a>-->
+<!--</body>-->
+<!--</html>-->
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -104,25 +174,35 @@
     <h3>Select a poster to assign a score:</h3>
 
     {% if posters %}
+        <!-- Dropdown for selecting posters -->
         <select id="posterSelect" onchange="showPosterForm()">
             <option value="">-- Select a Poster --</option>
             {% for poster in posters %}
-                {% if poster.judge_1_score is None or poster.judge_2_score is None %}
+                {% if poster.judge_1_innovation is None or poster.judge_2_innovation is None %}
                     <option value="{{ poster.id }}">{{ poster.title }}</option>
                 {% endif %}
             {% endfor %}
         </select>
 
+        <!-- Forms for each poster (Initially Hidden) -->
         {% for poster in posters %}
-            {% if poster.judge_1_score is None or poster.judge_2_score is None %}
+            {% if poster.judge_1_innovation is None or poster.judge_2_innovation is None %}
                 <form id="form_{{ poster.id }}" class="poster-form" method="POST" action="{% url 'submit_scores' %}" style="display: none;" onsubmit="confirmSubmission(event)">
                     {% csrf_token %}
                     <h4>{{ poster.title }}</h4>
                     <p>{{ poster.abstract }}</p>
 
-                    <label for="score">Score (0-10):</label>
-                    <input type="number" name="score" min="0" max="10" required>
+                    <!-- Input fields for scoring -->
+                    <label for="innovation">Innovation (0-10):</label>
+                    <input type="number" name="innovation" min="0" max="10" required>
 
+                    <label for="implementation">Implementation (0-10):</label>
+                    <input type="number" name="implementation" min="0" max="10" required>
+
+                    <label for="creativity">Creativity (0-10):</label>
+                    <input type="number" name="creativity" min="0" max="10" required>
+
+                    <!-- Hidden fields to track poster and judge -->
                     <input type="hidden" name="poster_id" value="{{ poster.id }}">
                     <input type="hidden" name="judge_name" value="{{ judge_name }}">
 
