@@ -68,7 +68,7 @@ A powerful web-based Poster Assignment System that streamlines the process of as
 1. Clone the repository:
 
 ```
-git clone https://github.com/your-username/poster-assignment-system.git
+git clone https://github.com/manthanghasadiya/ECS_Grad_Challenge.git
 
 cd poster-assignment-system
 ```
