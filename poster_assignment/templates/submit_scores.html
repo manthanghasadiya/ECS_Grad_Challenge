@@ -2,9 +2,99 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>thanks</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scores Already Assigned</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rubik', sans-serif;
+            background-color: #091235; /* Royal Blue */
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+
+        .container {
+            background-color: #14202e; /* Navy Blue */
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 600px;
+        }
+
+        h1 {
+            color: #88a9c3; /* Blue Gray */
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            color: #cdd6e1; /* Light Gray */
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: #5c5be5; /* Blue */
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background-color: #88a9c3; /* Blue Gray */
+        }
+
+        .btn-secondary {
+            background-color: #2b4257; /* Midnight Blue */
+            color: #fff;
+        }
+
+        .btn-secondary:hover {
+            background-color: #88a9c3; /* Blue Gray */
+        }
+
+        .icon {
+            font-size: 3rem;
+            color: #f55e77; /* Red Accent */
+            margin-bottom: 1rem;
+        }
+    </style>
 </head>
 <body>
-
+    <div class="container">
+        <div class="icon">⚠️</div>
+        <h1>Scores Already Assigned!</h1>
+        <p>Contact Admin to reassign the score.</p>
+        <div class="button-container">
+            <a href="{% url 'results' %}" class="btn btn-primary">Go Back</a>
+            <a href="{% url 'home' %}" class="btn btn-secondary">Home</a>
+        </div>
+    </div>
 </body>
 </html>

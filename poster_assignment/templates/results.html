@@ -141,16 +141,194 @@
 <!--</html>-->
 
 
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>Assign Scores</title>-->
+<!--    <script>-->
+<!--        function showPosterForm() {-->
+<!--            var selectedPoster = document.getElementById("posterSelect").value;-->
+<!--            var posterForms = document.getElementsByClassName("poster-form");-->
+
+<!--            for (var i = 0; i < posterForms.length; i++) {-->
+<!--                posterForms[i].style.display = "none";-->
+<!--            }-->
+
+<!--            if (selectedPoster) {-->
+<!--                document.getElementById("form_" + selectedPoster).style.display = "block";-->
+<!--            }-->
+<!--        }-->
+
+<!--        function confirmSubmission(event) {-->
+<!--            var confirmation = confirm("Are you sure you want to submit this as the final score?");-->
+<!--            if (!confirmation) {-->
+<!--                event.preventDefault();-->
+<!--            }-->
+<!--        }-->
+<!--    </script>-->
+<!--</head>-->
+<!--<body>-->
+<!--    <h2>Welcome, {{ judge_name }}</h2>-->
+<!--    <h3>Select a poster to assign a score:</h3>-->
+
+<!--    {% if posters %}-->
+<!--        &lt;!&ndash; Dropdown for selecting posters &ndash;&gt;-->
+<!--        <select id="posterSelect" onchange="showPosterForm()">-->
+<!--            <option value="">&#45;&#45; Select a Poster &#45;&#45;</option>-->
+<!--            {% for poster in posters %}-->
+<!--                {% if poster.judge_1_innovation is None or poster.judge_2_innovation is None %}-->
+<!--                    <option value="{{ poster.id }}">{{ poster.title }}</option>-->
+<!--                {% endif %}-->
+<!--            {% endfor %}-->
+<!--        </select>-->
+
+<!--        &lt;!&ndash; Forms for each poster (Initially Hidden) &ndash;&gt;-->
+<!--        {% for poster in posters %}-->
+<!--            {% if poster.judge_1_innovation is None or poster.judge_2_innovation is None %}-->
+<!--                <form id="form_{{ poster.id }}" class="poster-form" method="POST" action="{% url 'submit_scores' %}" style="display: none;" onsubmit="confirmSubmission(event)">-->
+<!--                    {% csrf_token %}-->
+<!--                    <h4>{{ poster.title }}</h4>-->
+<!--                    <p>{{ poster.abstract }}</p>-->
+
+<!--                    &lt;!&ndash; Input fields for scoring &ndash;&gt;-->
+<!--                    <label for="innovation">Innovation (0-10):</label>-->
+<!--                    <input type="number" name="innovation" min="0" max="10" required>-->
+
+<!--                    <label for="implementation">Implementation (0-10):</label>-->
+<!--                    <input type="number" name="implementation" min="0" max="10" required>-->
+
+<!--                    <label for="creativity">Creativity (0-10):</label>-->
+<!--                    <input type="number" name="creativity" min="0" max="10" required>-->
+
+<!--                    &lt;!&ndash; Hidden fields to track poster and judge &ndash;&gt;-->
+<!--                    <input type="hidden" name="poster_id" value="{{ poster.id }}">-->
+<!--                    <input type="hidden" name="judge_name" value="{{ judge_name }}">-->
+
+<!--                    <button type="submit">Submit Score</button>-->
+<!--                </form>-->
+<!--            {% endif %}-->
+<!--        {% endfor %}-->
+<!--    {% else %}-->
+<!--        <p>No posters assigned.</p>-->
+<!--    {% endif %}-->
+
+<!--    <a href="{% url 'logout' %}">Logout</a>-->
+<!--</body>-->
+<!--</html>-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assign Scores</title>
+    <title>Assigned Posters</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rubik', sans-serif;
+            background-color: #091235; /* Royal Blue */
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #14202e; /* Navy Blue */
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 800px;
+        }
+
+        h2, h3 {
+            color: #88a9c3; /* Blue Gray */
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        select, input, button {
+            width: 100%;
+            margin: 1rem 0;
+            padding: 0.8rem;
+            font-size: 1rem;
+            border: none;
+            border-radius: 4px;
+        }
+
+        select {
+            background-color: #2b4257; /* Midnight Blue */
+            color: #fff;
+        }
+
+        input {
+            background-color: #517a95; /* Midnight Blue */
+            color: #fff;
+        }
+
+        button {
+            background-color: #5c5be5; /* Blue */
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #88a9c3; /* Blue Gray */
+        }
+
+        .form-container {
+            background-color: #2b4257; /* Midnight Blue */
+            padding: 1.5rem;
+            margin-top: 1rem;
+            border-radius: 8px;
+        }
+
+        .poster-title {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin: 0.5rem 0;
+            font-weight: bold;
+        }
+
+        .no-posters {
+            text-align: center;
+            color: #cdd6e1;
+        }
+
+        .logout-link {
+            display: block;
+            text-align: center;
+            margin-top: 2rem;
+            color: #88a9c3; /* Blue Gray */
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .logout-link:hover {
+            text-decoration: underline;
+        }
+    </style>
     <script>
         function showPosterForm() {
             var selectedPoster = document.getElementById("posterSelect").value;
-            var posterForms = document.getElementsByClassName("poster-form");
+            var posterForms = document.getElementsByClassName("form-container");
 
             for (var i = 0; i < posterForms.length; i++) {
                 posterForms[i].style.display = "none";
@@ -170,50 +348,54 @@
     </script>
 </head>
 <body>
-    <h2>Welcome, {{ judge_name }}</h2>
-    <h3>Select a poster to assign a score:</h3>
+    <div class="container">
+        <h2>Welcome, {{ judge_name }}</h2>
+        <h3>Select a poster to assign scores:</h3>
 
-    {% if posters %}
-        <!-- Dropdown for selecting posters -->
-        <select id="posterSelect" onchange="showPosterForm()">
-            <option value="">-- Select a Poster --</option>
+        {% if posters %}
+            <!-- Dropdown for selecting posters -->
+            <select id="posterSelect" onchange="showPosterForm()">
+                <option value="">-- Select a Poster --</option>
+                {% for poster in posters %}
+                    {% if poster.judge_1_innovation_score is None or poster.judge_2_innovation_score is None %}
+                        <option value="{{ poster.id }}">{{ poster.title }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+
+            <!-- Forms for each poster -->
             {% for poster in posters %}
-                {% if poster.judge_1_innovation is None or poster.judge_2_innovation is None %}
-                    <option value="{{ poster.id }}">{{ poster.title }}</option>
+                {% if poster.judge_1_innovation_score is None or poster.judge_2_innovation_score is None %}
+                    <div id="form_{{ poster.id }}" class="form-container" style="display: none;">
+                        <form method="POST" action="{% url 'submit_scores' %}" onsubmit="confirmSubmission(event)">
+                            {% csrf_token %}
+                            <div class="poster-title"><strong>{{ poster.title }}</strong></div>
+                            <p>{{ poster.abstract }}</p>
+
+                            <!-- Input fields for scoring -->
+                            <label for="innovation">Innovation (0-10):</label>
+                            <input type="number" name="innovation" min="0" max="10" required>
+
+                            <label for="implementation">Implementation (0-10):</label>
+                            <input type="number" name="implementation" min="0" max="10" required>
+
+                            <label for="creativity">Creativity (0-10):</label>
+                            <input type="number" name="creativity" min="0" max="10" required>
+
+                            <!-- Hidden fields to track poster and judge -->
+                            <input type="hidden" name="poster_id" value="{{ poster.id }}">
+                            <input type="hidden" name="judge_name" value="{{ judge_name }}">
+
+                            <button type="submit">Submit Scores</button>
+                        </form>
+                    </div>
                 {% endif %}
             {% endfor %}
-        </select>
+        {% else %}
+            <p class="no-posters">No posters assigned.</p>
+        {% endif %}
 
-        <!-- Forms for each poster (Initially Hidden) -->
-        {% for poster in posters %}
-            {% if poster.judge_1_innovation is None or poster.judge_2_innovation is None %}
-                <form id="form_{{ poster.id }}" class="poster-form" method="POST" action="{% url 'submit_scores' %}" style="display: none;" onsubmit="confirmSubmission(event)">
-                    {% csrf_token %}
-                    <h4>{{ poster.title }}</h4>
-                    <p>{{ poster.abstract }}</p>
-
-                    <!-- Input fields for scoring -->
-                    <label for="innovation">Innovation (0-10):</label>
-                    <input type="number" name="innovation" min="0" max="10" required>
-
-                    <label for="implementation">Implementation (0-10):</label>
-                    <input type="number" name="implementation" min="0" max="10" required>
-
-                    <label for="creativity">Creativity (0-10):</label>
-                    <input type="number" name="creativity" min="0" max="10" required>
-
-                    <!-- Hidden fields to track poster and judge -->
-                    <input type="hidden" name="poster_id" value="{{ poster.id }}">
-                    <input type="hidden" name="judge_name" value="{{ judge_name }}">
-
-                    <button type="submit">Submit Score</button>
-                </form>
-            {% endif %}
-        {% endfor %}
-    {% else %}
-        <p>No posters assigned.</p>
-    {% endif %}
-
-    <a href="{% url 'logout' %}">Logout</a>
+        <a href="{% url 'home' %}" class="logout-link">Logout</a>
+    </div>
 </body>
 </html>

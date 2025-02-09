@@ -423,7 +423,7 @@ def submit_scores(request):
                 poster.judge_2_creativity = creativity
 
             else:
-                return HttpResponse("Scores already assigned!", status=403)
+                return render(request, "submit_scores.html")
 
             poster.save()  # Save the updated poster data
             return redirect("/results/")  # Redirect back to results page after submission
