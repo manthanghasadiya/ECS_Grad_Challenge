@@ -1,31 +1,123 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>Final Scoreboard</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--    <h1>Top 10 Poster Rankings</h1>-->
+<!--    <table border="1">-->
+<!--        <tr>-->
+<!--            <th>Rank</th>-->
+<!--            <th>Poster Title</th>-->
+<!--            <th>Total Score</th>-->
+<!--            <th>Innovation Score (Tiebreaker)</th>-->
+<!--            <th>Implementation Score (Tiebreaker)</th>-->
+<!--        </tr>-->
+<!--        {% for project in projects %}-->
+<!--        <tr>-->
+<!--            <td>{{ forloop.counter }}</td>-->
+<!--            <td>{{ project.title }}</td>-->
+<!--            <td>{{ project.total_score|floatformat:2 }}</td>-->
+<!--            <td>{{ project.innovation_score|floatformat:2 }}</td>-->
+<!--            <td>{{ project.implementation_score|floatformat:2 }}</td>-->
+<!--        </tr>-->
+<!--        {% endfor %}-->
+<!--    </table>-->
+
+<!--    <a href="{% url 'home' %}"><button>Back to Home</button></a>-->
+<!--</body>-->
+<!--</html>-->
+
+<!--{% load static %}-->
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <link rel="preconnect" href="https://fonts.googleapis.com" />-->
+<!--    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />-->
+<!--    <meta charset="UTF-8" />-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0" />-->
+<!--    <script src="https://unpkg.com/@phosphor-icons/web"></script>-->
+<!--    <link-->
+<!--      href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500&display=swap"-->
+<!--      rel="stylesheet"-->
+<!--    />-->
+<!--    <link rel="stylesheet" href="{% static 'css/leaderboard.css' %}">-->
+<!--    <title>Leaderboard</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--    <main>-->
+<!--        <div id="header">-->
+<!--            <h1>Final Poster Rankings</h1>-->
+<!--        </div>-->
+<!--        <div id="leaderboard">-->
+<!--            <table>-->
+<!--                &lt;!&ndash; Table Header &ndash;&gt;-->
+<!--                <thead>-->
+<!--                    <tr class="header-row">-->
+<!--                        <th>Rank</th>-->
+<!--                        <th>Project Name</th>-->
+<!--                        <th>Total Score</th>-->
+<!--                        <th>Innovation Score</th>-->
+<!--                        <th>Implementation Score</th>-->
+<!--                    </tr>-->
+<!--                </thead>-->
+<!--                <tbody>-->
+<!--                    {% for project in projects %}-->
+<!--                    <tr>-->
+<!--                        <td>{{ forloop.counter }}</td>-->
+<!--                        <td>{{ project.title }}</td>-->
+<!--                        <td>{{ project.total_score|floatformat:2 }}</td>-->
+<!--                        <td>{{ project.innovation_score|floatformat:2 }}</td>-->
+<!--                        <td>{{ project.implementation_score|floatformat:2 }}</td>-->
+<!--                    </tr>-->
+<!--                    {% endfor %}-->
+<!--                </tbody>-->
+<!--            </table>-->
+<!--        </div>-->
+<!--    </main>-->
+<!--</body>-->
+<!--</html>-->
+
+
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Final Scoreboard</title>
+    <link rel="stylesheet" href="{% static 'css/leaderboard.css' %}">
+    <title>Leaderboard</title>
 </head>
 <body>
-    <h1>Top 10 Poster Rankings</h1>
-    <table border="1">
-        <tr>
-            <th>Rank</th>
-            <th>Poster Title</th>
-            <th>Total Score</th>
-            <th>Innovation Score (Tiebreaker)</th>
-            <th>Implementation Score (Tiebreaker)</th>
-        </tr>
-        {% for project in projects %}
-        <tr>
-            <td>{{ forloop.counter }}</td>
-            <td>{{ project.title }}</td>
-            <td>{{ project.total_score|floatformat:2 }}</td>
-            <td>{{ project.innovation_score|floatformat:2 }}</td>
-            <td>{{ project.implementation_score|floatformat:2 }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-
-    <a href="{% url 'home' %}"><button>Back to Home</button></a>
+    <main>
+        <div id="header">
+            <h1>Final Poster Rankings</h1>
+        </div>
+        <div id="leaderboard">
+            <table>
+                <!-- Table Header -->
+                <thead>
+                    <tr class="header-row">
+                        <th>Rank</th>
+                        <th>Project Name</th>
+                        <th>Total Score</th>
+                        <th>Innovation Avg</th>
+                        <th>Implementation Avg</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for project in projects %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ project.title }}</td>
+                        <td>{{ project.total_score|floatformat:2 }}</td>
+                        <td>{{ project.innovation_avg|floatformat:2 }}</td>
+                        <td>{{ project.implementation_avg|floatformat:2 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
 </body>
 </html>

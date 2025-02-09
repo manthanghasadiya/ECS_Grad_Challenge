@@ -1,0 +1,108 @@
+* {
+  font-size: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  height: 100%;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #fbfaff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+main {
+  width: 90%;
+  max-width: 1200px;
+  background-color: #ffffff;
+  box-shadow: 0px 5px 15px 8px #e4e7fb;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+}
+
+#header {
+  text-align: center;
+  padding-bottom: 1.5rem;
+}
+
+h1 {
+  font-family: "Rubik", sans-serif;
+  font-size: 2rem;
+  color: #141a39;
+  text-transform: uppercase;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+  color: #141a39;
+}
+
+thead th {
+  background-color: #14202e;
+  color: #fff;
+  text-align: left;
+  padding: 1rem;
+  font-size: 1.2rem;
+}
+
+tbody tr {
+  transition: all 0.2s ease-in-out;
+  background-color: #f9f9f9;
+  text-align: left;
+}
+
+tbody tr:hover {
+  background-color: #ffffff;
+  transform: scale(1.02);
+  box-shadow: 0px 5px 15px 8px #e4e7fb;
+}
+
+td,
+th {
+  padding: 1rem;
+  border-bottom: 1px solid #ddd;
+}
+
+td {
+  font-family: "Rubik", sans-serif;
+  font-size: 1rem;
+}
+
+td:nth-child(3),
+td:nth-child(4),
+td:nth-child(5) {
+  text-align: right;
+}
+
+tbody tr:nth-child(odd) {
+  background-color: #f3f4f6;
+}
+
+tbody tr:nth-child(1) td {
+  font-weight: bold;
+}
+
+tbody tr:nth-child(1) {
+  background-color: #091235; /* Gold for rank 1 */
+  color: #fff;
+}
+
+tbody tr:nth-child(2) {
+  background-color: #2b4257; /* Silver for rank 2 */
+  color: #fff;
+}
+
+tbody tr:nth-child(3) {
+  background-color: #88a9c3; /* Bronze for rank 3 */
+  color: #fff;
+}
+
+#leaderboard {
+  margin-top: 1rem;
+}

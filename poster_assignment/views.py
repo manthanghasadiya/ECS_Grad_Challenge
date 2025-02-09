@@ -18,6 +18,10 @@ from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import AuthenticationForm
 
+from django.db.models import F, Value
+from django.db.models.functions import Coalesce
+
+
 
 from django.shortcuts import render
 
@@ -453,49 +457,83 @@ def logout(request):
     return redirect("login")  # Redirect to login page
 
 
+# def ranking(request):
+#     """
+#     View to display the top 10 ranked posters.
+#     Sorting is based on total average score,
+#     with tiebreakers based on Innovation and Implementation scores.
+#     """
+#     # Fetch all posters with valid scores
+#     posters = Poster.objects.all()
+#
+#     # Compute total scores
+#     ranked_projects = []
+#     for poster in posters:
+#         if None not in [
+#             poster.judge_1_innovation, poster.judge_1_implementation, poster.judge_1_creativity,
+#             poster.judge_2_innovation, poster.judge_2_implementation, poster.judge_2_creativity
+#         ]:
+#             # Calculate the average total score
+#             total_score = (
+#                 poster.judge_1_innovation + poster.judge_1_implementation + poster.judge_1_creativity +
+#                 poster.judge_2_innovation + poster.judge_2_implementation + poster.judge_2_creativity
+#             ) / 6
+#
+#             # Calculate innovation and implementation averages (for tie-breaking)
+#             innovation_score = (poster.judge_1_innovation + poster.judge_2_innovation) / 2
+#             implementation_score = (poster.judge_1_implementation + poster.judge_2_implementation) / 2
+#
+#             ranked_projects.append({
+#                 "title": poster.title,
+#                 "total_score": total_score,
+#                 "innovation_score": innovation_score,
+#                 "implementation_score": implementation_score,
+#             })
+#
+#     # Sort first by total score, then by innovation score, then by implementation score
+#     ranked_projects.sort(
+#         key=lambda x: (-x["total_score"], -x["innovation_score"], -x["implementation_score"])
+#     )
+#
+#     # Get the top 10 projects
+#     top_10_projects = ranked_projects[:]
+#
+#     return render(request, "ranking.html", {"projects": top_10_projects})
+#
+
+
 def ranking(request):
     """
-    View to display the top 10 ranked posters.
-    Sorting is based on total average score,
-    with tiebreakers based on Innovation and Implementation scores.
+    Display the leaderboard with projects ranked by their total scores.
+    If scores are missing, they are treated as zero.
     """
-    # Fetch all posters with valid scores
-    posters = Poster.objects.all()
 
-    # Compute total scores
-    ranked_projects = []
-    for poster in posters:
-        if None not in [
-            poster.judge_1_innovation, poster.judge_1_implementation, poster.judge_1_creativity,
-            poster.judge_2_innovation, poster.judge_2_implementation, poster.judge_2_creativity
-        ]:
-            # Calculate the average total score
-            total_score = (
-                poster.judge_1_innovation + poster.judge_1_implementation + poster.judge_1_creativity +
-                poster.judge_2_innovation + poster.judge_2_implementation + poster.judge_2_creativity
-            ) / 6
+    # Annotate each poster with calculated fields:
+    # Total Score = (Judge 1 Innovation + Judge 1 Implementation + Judge 1 Creativity +
+    #                Judge 2 Innovation + Judge 2 Implementation + Judge 2 Creativity) / 6
+    posters = Poster.objects.annotate(
+        total_score=(
+            Coalesce(F('judge_1_innovation'), Value(0)) +
+            Coalesce(F('judge_1_implementation'), Value(0)) +
+            Coalesce(F('judge_1_creativity'), Value(0)) +
+            Coalesce(F('judge_2_innovation'), Value(0)) +
+            Coalesce(F('judge_2_implementation'), Value(0)) +
+            Coalesce(F('judge_2_creativity'), Value(0))
+        ) / 6,
+        innovation_avg=(
+            Coalesce(F('judge_1_innovation'), Value(0)) +
+            Coalesce(F('judge_2_innovation'), Value(0))
+        ) / 2,
+        implementation_avg=(
+            Coalesce(F('judge_1_implementation'), Value(0)) +
+            Coalesce(F('judge_2_implementation'), Value(0))
+        ) / 2
+    ).order_by('-total_score', '-innovation_avg', '-implementation_avg')  # Sorting logic
 
-            # Calculate innovation and implementation averages (for tie-breaking)
-            innovation_score = (poster.judge_1_innovation + poster.judge_2_innovation) / 2
-            implementation_score = (poster.judge_1_implementation + poster.judge_2_implementation) / 2
+    # Slice top 10 posters
+    top_posters = posters[:]
 
-            ranked_projects.append({
-                "title": poster.title,
-                "total_score": total_score,
-                "innovation_score": innovation_score,
-                "implementation_score": implementation_score,
-            })
-
-    # Sort first by total score, then by innovation score, then by implementation score
-    ranked_projects.sort(
-        key=lambda x: (-x["total_score"], -x["innovation_score"], -x["implementation_score"])
-    )
-
-    # Get the top 10 projects
-    top_10_projects = ranked_projects[:100]
-
-    return render(request, "ranking.html", {"projects": top_10_projects})
-
+    return render(request, 'ranking.html', {'projects': top_posters})
 
 
 # def results(request):
