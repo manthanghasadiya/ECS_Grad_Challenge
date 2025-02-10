@@ -87,19 +87,31 @@ source env/bin/activate  # On Windows, use `env\Scripts\activate`
 pip install -r requirements.txt
 ```
 
-4. Apply migrations:
+4. Install Stopwords and punkt_tab:
+
+```
+python
+
+>> import nltk
+
+>> nltk.download('stopwords')
+
+>> nltk.download ('punkt_tab') 
+```
+
+5. Apply migrations:
 
 ```
 python manage.py migrate
 ```
 
-5. Start the server:
+6. Start the server:
 
 ```
 python manage.py runserver
 ```
 
-6. Access the system at http://127.0.0.1:8000.
+7. Access the system at http://127.0.0.1:8000.
 
 
 ## 🔑 Usage
