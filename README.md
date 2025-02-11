@@ -130,7 +130,7 @@ python manage.py runserver
   + Innovation
   + Implementation
   + Creativity
-+  Logout once all scores are submitted.
++  Log out once all scores are submitted.
 
 
 ## 📊 Ranking System
